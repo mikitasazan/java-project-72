@@ -17,6 +17,9 @@ repositories {
 dependencies {
     implementation("io.javalin:javalin:7.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.18")
+    implementation("com.zaxxer:HikariCP:7.1.0")
+    implementation("com.h2database:h2:2.4.240")
+    implementation("org.postgresql:postgresql:42.7.13")
 
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
