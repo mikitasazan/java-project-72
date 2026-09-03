@@ -1,3 +1,7 @@
 .gradle
 build
 *.class
+
+node_modules
+src/main/resources/static
+jte-classes

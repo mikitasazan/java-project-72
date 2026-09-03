@@ -2,8 +2,13 @@ package hexlet.code;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
+import io.javalin.rendering.template.JavalinJte;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +30,12 @@ public class App {
         return System.getenv().getOrDefault(
                 "JDBC_DATABASE_URL",
                 "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;");
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        return TemplateEngine.create(codeResolver, ContentType.Html);
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -53,7 +64,14 @@ public class App {
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
-            config.routes.get("/", ctx -> ctx.result("Hello World"));
+            config.fileRenderer(new JavalinJte(createTemplateEngine()));
+
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.directory = "/static";
+                staticFiles.location = Location.CLASSPATH;
+            });
+
+            config.routes.get("/", ctx -> ctx.render("index.jte"));
         });
 
         return app;
