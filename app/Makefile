@@ -3,7 +3,10 @@ setup:
 	npm run build:css
 	./gradlew installDist
 
+start:
+	./build/install/app/bin/app
+
 test:
 	./gradlew test
 
-.PHONY: setup test
+.PHONY: setup start test
