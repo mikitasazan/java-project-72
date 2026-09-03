@@ -1,6 +1,7 @@
 @import java.util.List
 @import hexlet.code.model.Url
 @import hexlet.code.model.UrlCheck
+@import hexlet.code.util.Strings
 @param Url url
 @param List<UrlCheck> checks
 @param String flash = null
@@ -38,6 +39,9 @@
                 <tr class="border-b border-gray-200">
                     <th class="py-2 pr-4">ID</th>
                     <th class="py-2 pr-4">Код ответа</th>
+                    <th class="py-2 pr-4">h1</th>
+                    <th class="py-2 pr-4">title</th>
+                    <th class="py-2 pr-4">description</th>
                     <th class="py-2 pr-4">Дата создания</th>
                 </tr>
             </thead>
@@ -46,6 +50,9 @@
                     <tr class="border-b border-gray-100">
                         <td class="py-2 pr-4">${check.getId()}</td>
                         <td class="py-2 pr-4">${check.getStatusCode()}</td>
+                        <td class="py-2 pr-4">${Strings.truncate(check.getH1())}</td>
+                        <td class="py-2 pr-4">${Strings.truncate(check.getTitle())}</td>
+                        <td class="py-2 pr-4">${Strings.truncate(check.getDescription())}</td>
                         <td class="py-2 pr-4">${check.getCreatedAt().toLocalDate().toString()}</td>
                     </tr>
                 @endfor

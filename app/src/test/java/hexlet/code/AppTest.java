@@ -190,6 +190,27 @@ class AppTest {
     }
 
     @Test
+    void testCheckValuesAreTruncatedInTable() {
+        var longTitle = "T".repeat(250);
+        var html = "<html><head><title>" + longTitle + "</title></head>"
+                + "<body><h1>H</h1></body></html>";
+        mockWebServer.enqueue(new MockResponse().setBody(html).setResponseCode(200));
+        var mockUrl = mockWebServer.url("/").toString();
+
+        JavalinTest.test(app, FOLLOW_REDIRECTS, (server, client) -> {
+            client.post("/urls", "url=" + mockUrl);
+            var normalizedMockUrl = mockUrl.substring(0, mockUrl.length() - 1);
+            var url = UrlRepository.findByName(normalizedMockUrl).orElseThrow();
+
+            client.post("/urls/" + url.getId() + "/checks");
+            var page = client.get("/urls/" + url.getId()).body().string();
+
+            assertThat(page).contains("T".repeat(200) + "...");
+            assertThat(page).doesNotContain("T".repeat(201));
+        });
+    }
+
+    @Test
     void testCreateCheckUrlNotFound() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.post("/urls/999999/checks");
