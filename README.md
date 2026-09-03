@@ -2,6 +2,7 @@
 
 [![hexlet-check](https://github.com/mikitasazan/java-project-72/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/mikitasazan/java-project-72/actions)
 [![Java CI](https://github.com/mikitasazan/java-project-72/actions/workflows/checks.yml/badge.svg)](https://github.com/mikitasazan/java-project-72/actions/workflows/checks.yml)
+[![Coverage](.github/badges/jacoco.svg)](https://github.com/mikitasazan/java-project-72/actions/workflows/checks.yml)
 
 Создадите полноценное веб-приложение, которое выполняет запросы по сети и сохраняет данные в базу данных. Настроите CI и выполните деплой.
 

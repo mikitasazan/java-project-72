@@ -23,3 +23,20 @@ jobs:
 
       - name: Setup
         run: make setup
+
+      - name: Test with coverage
+        run: make test
+
+      - name: Generate JaCoCo badges
+        id: jacoco
+        uses: cicirello/jacoco-badge-generator@v2.12.1
+        with:
+          jacoco-csv-file: app/build/reports/jacoco/test/jacocoTestReport.csv
+          badges-directory: .github/badges
+
+      - name: Commit updated badges
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: update coverage badges [skip ci]'
+          file_pattern: '.github/badges/*.svg'

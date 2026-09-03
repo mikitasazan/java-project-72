@@ -1,4 +1,7 @@
 setup:
 	$(MAKE) -C app setup
 
-.PHONY: setup
+test:
+	$(MAKE) -C app test
+
+.PHONY: setup test

@@ -3,4 +3,7 @@ setup:
 	npm run build:css
 	./gradlew installDist
 
-.PHONY: setup
+test:
+	./gradlew test
+
+.PHONY: setup test
