@@ -7,6 +7,11 @@ public class Url {
     private String name;
     private LocalDateTime createdAt;
 
+    // Not persisted on this entity — filled in by the /urls list handler
+    // from the latest row in url_checks, for display only.
+    private Integer lastCheckStatusCode;
+    private LocalDateTime lastCheckCreatedAt;
+
     public Url() {
     }
 
@@ -36,5 +41,21 @@ public class Url {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Integer getLastCheckStatusCode() {
+        return lastCheckStatusCode;
+    }
+
+    public void setLastCheckStatusCode(Integer lastCheckStatusCode) {
+        this.lastCheckStatusCode = lastCheckStatusCode;
+    }
+
+    public LocalDateTime getLastCheckCreatedAt() {
+        return lastCheckCreatedAt;
+    }
+
+    public void setLastCheckCreatedAt(LocalDateTime lastCheckCreatedAt) {
+        this.lastCheckCreatedAt = lastCheckCreatedAt;
     }
 }

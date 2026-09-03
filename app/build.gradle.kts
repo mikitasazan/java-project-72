@@ -23,11 +23,14 @@ dependencies {
     implementation("com.zaxxer:HikariCP:7.1.0")
     implementation("com.h2database:h2:2.4.240")
     implementation("org.postgresql:postgresql:42.7.13")
+    implementation("com.konghq:unirest-java-core:4.10.1")
+    implementation("org.jsoup:jsoup:1.23.2")
 
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.javalin:javalin-testtools:7.2.3")
     testImplementation("org.assertj:assertj-core:3.27.7")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.5.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

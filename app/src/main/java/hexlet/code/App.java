@@ -6,12 +6,16 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.BaseRepository;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.rendering.template.JavalinJte;
+import kong.unirest.core.Unirest;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -117,6 +121,13 @@ public class App {
 
             config.routes.get("/urls", ctx -> {
                 var urls = UrlRepository.getEntities();
+                for (var url : urls) {
+                    var lastCheck = UrlCheckRepository.findLatestByUrlId(url.getId());
+                    if (lastCheck.isPresent()) {
+                        url.setLastCheckStatusCode(lastCheck.get().getStatusCode());
+                        url.setLastCheckCreatedAt(lastCheck.get().getCreatedAt());
+                    }
+                }
                 ctx.render("urls/index.jte", Map.of("urls", urls));
             });
 
@@ -124,14 +135,52 @@ public class App {
                 var id = ctx.pathParamAsClass("id", Long.class).get();
                 var url = UrlRepository.find(id)
                         .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
+                var checks = UrlCheckRepository.findByUrlId(id);
 
                 var flash = (String) ctx.consumeSessionAttribute("flash");
                 Map<String, Object> model = new HashMap<>();
                 model.put("url", url);
+                model.put("checks", checks);
                 if (flash != null) {
                     model.put("flash", flash);
                 }
                 ctx.render("urls/show.jte", model);
+            });
+
+            config.routes.post("/urls/{id}/checks", ctx -> {
+                var id = ctx.pathParamAsClass("id", Long.class).get();
+                var url = UrlRepository.find(id)
+                        .orElseThrow(() -> new NotFoundResponse("Url with id = " + id + " not found"));
+
+                try {
+                    var response = Unirest.get(url.getName()).asString();
+                    var statusCode = response.getStatus();
+                    if (statusCode >= 400) {
+                        ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
+                        ctx.redirect("/urls/" + id);
+                        return;
+                    }
+
+                    var body = response.getBody();
+                    var doc = Jsoup.parse(body == null ? "" : body);
+
+                    var check = new UrlCheck();
+                    check.setUrlId(id);
+                    check.setStatusCode(statusCode);
+                    check.setTitle(doc.title());
+
+                    var h1El = doc.selectFirst("h1");
+                    check.setH1(h1El == null ? null : h1El.text());
+
+                    var descriptionEl = doc.selectFirst("meta[name=description]");
+                    check.setDescription(descriptionEl == null ? null : descriptionEl.attr("content"));
+
+                    UrlCheckRepository.save(check);
+                    ctx.sessionAttribute("flash", "Страница успешно проверена");
+                } catch (Exception e) {
+                    ctx.sessionAttribute("flash", "Произошла ошибка при проверке");
+                }
+                ctx.redirect("/urls/" + id);
             });
         });
 
